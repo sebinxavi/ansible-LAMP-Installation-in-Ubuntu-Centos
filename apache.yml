@@ -1,0 +1,93 @@
+---
+- name: "Installing Lamp on different OS versions"
+  become: true
+  hosts: all
+  tasks:
+
+  - name: "CentOS - Update all Packages"
+    when: ansible_os_family == "CentOS"
+    yum:
+      name: "*"
+      state: present
+
+
+  - name: "CentOS - Install Packages"
+    when: ansible_os_family == "CentOS"
+    yum: 
+      name: 
+        - httpd  
+        - php
+        - php-mysql  
+        - mariadb-server
+      state: present
+          
+  - name: "CentOS - creating sample index.html file"
+    when: ansible_os_family == "CentOS"
+    copy:
+      content: "<center> <h1> This is index 1 test html file </center> </h1>"
+      dest: /var/www/html/index.html    
+      owner: apache
+      group: apache
+
+  - name: "CentOS - Creating phpinfo file"
+    when: ansible_os_family == "CentOS"
+    copy:
+      content: "<? php phpinfo(); ?>"
+      dest: /var/www/html/index.php
+      owner: apache
+      group: apache
+
+ 
+  - name: "CentOS - Restarting and Enabling httpd and mariadb services" 
+    when: ansible_os_family == "CentOS"
+    service:    
+      name: "{{ item }}"
+      state: restarted
+      enabled: true
+    with_items:
+      - httpd
+      - mariadb    
+
+  - name: "ubuntu - Update all Packages of OS"
+    when: ansible_os_family == "Debian"
+    apt:
+      name: "*"
+      state: present
+
+  - name: "Ubuntu - Installing Packages"
+    when: ansible_os_family == "Debian"
+    apt:
+      pkg:
+        - apache2
+        - php
+        - php-mysql
+        - mysql-server
+      state: present
+      update_cache: true
+
+  - name: "Ubuntu - Creating sample index.html file"
+    when: ansible_os_family == "Debian"
+    copy:
+      content: "<center> <h1> This is sample index 1 html file</center></h1>"
+      dest: /var/www/html/index.html
+      owner: www-data
+      group: www-data
+
+  - name: "Ubuntu - Creating phpinfo file"
+    when: ansible_os_family == "Debian"  
+    copy:
+      content: "<? php phpinfo(); ?>"
+      dest: /var/www/html/index.php
+      owner: www-data
+      group: www-data
+
+
+  - name: "Ubuntu - Restarting/Enabling apache, mysql services"
+    when: ansible_os_family == "Debian"
+    service:
+      name: "{{ item }}"
+      state: restarted
+      enabled: true
+    with_items:
+      - apache2
+      - mysql
