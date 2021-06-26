@@ -64,7 +64,7 @@ Run the ansible-playbook from the master server by below command,
 $ ansible-playbook -i hosts apache.yml
 ```
 
-## Results:
+## Results
 Access the IP address of the Remote Host servers in Browser and you can see the sample html page.
 
 ## Author
